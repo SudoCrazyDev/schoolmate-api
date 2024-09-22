@@ -32,7 +32,8 @@ class User extends Authenticatable
         'birthdate',
         'email',
         'password',
-        'token'
+        'token',
+        'is_new'
     ];
 
     /**
@@ -83,5 +84,15 @@ class User extends Authenticatable
     public function institutions(): BelongsToMany
     {
         return $this->belongsToMany(Institution::class, 'user_institutions', 'user_id', 'institution_id');
+    }
+    
+    public function loads(): HasMany
+    {
+        return $this->hasMany(SectionSubject::class, 'subject_teacher');
+    }
+    
+    public function advisory(): HasOne
+    {
+        return $this->hasOne(InstitutionSection::class, 'class_adviser');
     }
 }

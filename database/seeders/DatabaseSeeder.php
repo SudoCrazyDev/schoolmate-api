@@ -36,7 +36,8 @@ class DatabaseSeeder extends Seeder
                 'middle_name' => 'antepuesto',
                 'last_name' => 'Calub',
                 'email' => 'philiplouis0717@gmail.com',
-                'password' => 'password'
+                'password' => 'password',
+                'is_new' => 0
             ]);
             Log::info($app_user->id);
             DB::table('user_institutions')->insert([

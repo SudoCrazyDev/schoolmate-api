@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('institution_id')->nullable();
+            $table->foreignUuid('institution_id')->nullable();
             $table->string('lrn')->nullable();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
@@ -21,13 +21,6 @@ return new class extends Migration
             $table->string('ext_name')->nullable();;
             $table->string('gender');
             $table->date('birthdate');
-            $table->timestamps();
-        });
-        
-        Schema::create('student_sections', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('student_id');
-            $table->foreignUuid('section_id')->references('id')->on('institution_sections');
             $table->timestamps();
         });
     }

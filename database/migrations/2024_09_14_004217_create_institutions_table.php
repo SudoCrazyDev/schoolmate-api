@@ -31,14 +31,6 @@ return new class extends Migration
             $table->smallInteger('is_default')->default(0);
             $table->timestamps();
         });
-        
-        Schema::create('institution_sections', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('class_adviser')->references('id')->on('users')->nullable();
-            $table->foreignUuid('institution_id');
-            $table->smallInteger('is_default');
-            $table->timestamps();
-        });
     }
 
     /**
