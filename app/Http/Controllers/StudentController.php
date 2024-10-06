@@ -56,15 +56,36 @@ class StudentController extends Controller
     public function submit_grade(Request $request)
     {
         try {
-            StudentGrade::insert($request->grades);
+            foreach($request->grades as $grade){
+                StudentGrade::updateOrCreate(
+                    ['student_id' => $grade['student_id'], 'subject_id' => $grade['subject_id'], 'quarter' => $grade['quarter']],
+                    ['grade' => $grade['grade'], 'is_locked' => 1]
+                );
+            }
             return response()->json([
                 'message' => 'Student Grades Submitted!'
             ], 201);
         } catch (\Throwable $th) {
-            Log::info($th);
             return response()->json([
                 'message' => 'Failed to Submit Grades!'
             ], 400);
         }
+    }
+    
+    public function unlock_student_grade(Request $request, $grade_id)
+    {
+        try {
+            $grade = StudentGrade::find($grade_id);
+            $grade->is_locked = $request->state;
+            $grade->save();
+            return response()->json([
+                'message' => 'Grade Updated!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Error updating Grade!'
+            ], 200);
+        }
+        
     }
 }

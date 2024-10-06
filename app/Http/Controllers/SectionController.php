@@ -58,8 +58,10 @@ class SectionController extends Controller
                     'title' => $request->title,
                     'academic_year' => $request->academic_year
                 ]);
-                foreach ($request->subjects as $subject) {
-                    SectionSubject::insert([...$subject, 'section_id' => $section->id]);
+                if(count($request->subjects) > 0){
+                    foreach ($request->subjects as $subject) {
+                        SectionSubject::insert([...$subject, 'section_id' => $section->id]);
+                    }
                 }
             });
             return response()->json([
@@ -112,6 +114,6 @@ class SectionController extends Controller
     
     public function get_section_details($section_id)
     {
-        return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades')->first();
+        return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades', 'class_adviser')->first();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SectionController;
@@ -51,6 +52,7 @@ Route::group(['prefix' => 'subjects', 'controller' => SubjectController::class],
     Route::get('by_section/{section_id}', 'get_subjects_by_section');
     Route::get('by_user/{user_id}', 'get_subjects_by_user');
     Route::get('{subject_id}', 'get_subject_details');
+    Route::put('unlock_grades/{subject_id}', 'unlock_subject_grades');
     Route::put('{subject_id}', 'update_subject');
     Route::post('validate_conflict', 'check_for_teacher_conflict');
     Route::post('add', 'create_subject');
@@ -61,4 +63,10 @@ Route::group(['prefix' => 'students', 'controller' => StudentController::class],
     Route::post('add', 'create_student');
     Route::post('submit_grades', 'submit_grade');
     Route::put('update', 'update_student');
+    Route::put('unlock_grade/{grade_id}', 'unlock_student_grade');
+});
+
+Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
+    Route::get('grade_access/{institution_id}', 'get_grades_access');
+    Route::put('update_grading_access/{institution_id}', 'update_grading_access');
 });

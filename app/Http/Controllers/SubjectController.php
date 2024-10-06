@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\SectionSubject;
+use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SubjectController extends Controller
@@ -106,5 +108,25 @@ class SubjectController extends Controller
         return SectionSubject::where('id', $subject_id)->with(['students.grades' => function($query) use ($subject_id){
             $query->where('subject_id', $subject_id);
         }])->first();
+    }
+    
+    public function unlock_subject_grades(Request $request, $subject_id)
+    {
+        try {
+            DB::transaction(function() use ($request, $subject_id){
+                StudentGrade::where('subject_id', $subject_id)
+                ->where('quarter', $request->quarter)
+                ->update(['is_locked' => $request->is_locked]);
+            });
+            return response()->json([
+                'message' => 'Subject Unlocked!'
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to update subject'
+            ], 400);
+        }
+        
     }
 }
