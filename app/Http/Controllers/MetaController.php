@@ -12,7 +12,6 @@ class MetaController extends Controller
     public function get_grades_access($institution_id)
     {
         $grading_access = InstitutionGradingAccess::where('institution_id', $institution_id)->get();
-        Log::info($grading_access);
         if(count($grading_access) === 0){
             $access = InstitutionGradingAccess::create([
                 'institution_id' => $institution_id,
