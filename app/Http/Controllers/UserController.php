@@ -15,6 +15,12 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
+        if(!$user){
+            return response()->json([
+                'data' => null,
+                'message' => 'Invalid Credentials'
+            ], 400);
+        };
         if(Hash::check($request->password, $user->password)){
             $user->token = Str::random(25);
             $user->save();

@@ -17,7 +17,7 @@ Route::post('/login', [UserController::class, 'login']);
 Route::prefix('institution')->controller(InstitutionController::class)->group(function(){
     Route::get('all', 'get_all_institution');
     Route::post('add', 'create_institution');
-    Route::patch('update', 'update_institution');
+    Route::post('update', 'update_institution');
 });
 
 Route::prefix('roles')->controller(RoleController::class)->group(function(){

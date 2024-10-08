@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Institution;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class InstitutionController extends Controller
 {
@@ -39,22 +42,24 @@ class InstitutionController extends Controller
 
     public function update_institution(Request $request)
     {
-        $validated = $request->validate([
-            'id' => 'required|exists:institutions,id',
-            'title' => 'sometimes|nullable',
-            'abbr' => 'sometimes|nullable'
-        ]);
-        if(!$validated){
-            return response()->json([
-                'data' => null,
-                'message' => 'Invalid Updating Institution!'
-            ], 400);
+        $file = $request->file('logo');
+        $path = $request->logo;
+        if($file){
+            $path = Storage::put($request->id . "/logo", $file, 'public');
         }
         try {
-            Institution::where('id', $validated['id'])->update($validated);
+            DB::transaction(function() use($request, $path){
+                Institution::where('id', $request->id)
+                ->update([
+                    'title' => $request->institution,
+                    'abbr' => $request->abbr,
+                    'address' => $request->address,
+                    'logo' => $path
+                ]);
+            });
             return response()->json([
                 'data' => $this->get_all_institution(),
-                'message' => 'Institution Added'
+                'message' => 'Institution Updated!'
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -62,6 +67,5 @@ class InstitutionController extends Controller
                 'message' => 'Error on Updating Institution'
             ], 400);
         }
-        
     }
 }
