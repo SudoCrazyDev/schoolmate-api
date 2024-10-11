@@ -35,7 +35,10 @@ Route::prefix('users')->controller(UserController::class)->group(function(){
     Route::get('all_by_institutions/{institution_id}', 'get_users_by_institutions');
     Route::get('all_users/{institution_id}', 'get_all_users');
     Route::get('{slug}', 'get_users_by_role');
+    Route::get('validate/{email}', 'validate_email');
     Route::post('add', 'create_user');
+    Route::put('update/{user_id}', 'update_user');
+    Route::put('role/{user_id}', 'update_user_role');
 });
 
 Route::prefix('institution_sections')->controller(SectionController::class)->group(function(){

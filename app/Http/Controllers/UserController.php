@@ -97,7 +97,7 @@ class UserController extends Controller
         try {
             $users = User::whereHas('institutions', function($query) use($institution_id){
                $query->where('institutions.id', $institution_id);
-            })->with('roles:title,slug')->paginate(10);
+            })->with('roles:id,title,slug')->paginate(10);
             return response()->json([
                 'data' => $users
             ], 200);
@@ -122,6 +122,58 @@ class UserController extends Controller
             Log::info($th);
             return response()->json([
                 'message' => "Error Fetching Users"
+            ], 400);
+        }
+    }
+    
+    public function update_user(Request $request, $user_id)
+    {
+        try {
+            DB::transaction(function() use($request, $user_id) {
+                User::where('id', $user_id)
+                ->update([
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email
+                ]);
+            });
+            return response()->json([
+                'message' => 'User Updated!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to update user!'
+            ], 200);
+        }
+    }
+    
+    public function validate_email($email)
+    {
+        $user = User::where('email', $email)->first();
+        if($user){
+            return response()->json([
+                'message' => 'Email exists'
+            ], 400);
+        }else{
+            return response()->json([
+                'message' => 'Email is Valid'
+            ], 200);
+        }
+    }
+    
+    public function update_user_role(Request $request, $user_id)
+    {
+        try {
+            DB::transaction(function() use($request, $user_id){
+                DB::table('user_roles')->where('user_id', $user_id)->update(['role_id' => $request->roles]);
+            });
+            return response()->json([
+                'message' => 'User Role Updated!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to update user role!'
             ], 400);
         }
     }
