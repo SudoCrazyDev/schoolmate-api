@@ -88,4 +88,34 @@ class StudentController extends Controller
         }
         
     }
+    
+    public function count_students_per_section($section_id)
+    {
+        try {
+            $students = Student::whereHas('sections', function($query) use($section_id){
+                $query->where('section_id', $section_id);
+            })->get();
+            return response()->json([
+                'data' => $students,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to retrieve students.'
+            ], 400);
+        }
+    }
+    
+    public function count_students_per_institution($institution_id)
+    {
+        try {
+            $students = Student::where('institution_id', $institution_id)->get();
+            return response()->json([
+                'data' => $students,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to retrieve students.'
+            ], 400);
+        }
+    }
 }

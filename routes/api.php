@@ -67,6 +67,8 @@ Route::group(['prefix' => 'students', 'controller' => StudentController::class],
     Route::post('submit_grades', 'submit_grade');
     Route::put('update', 'update_student');
     Route::put('unlock_grade/{grade_id}', 'unlock_student_grade');
+    Route::get('count/section/{section_id}', 'count_students_per_section');
+    Route::get('count/institution/{institution_id}', 'count_students_per_institution');
 });
 
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
