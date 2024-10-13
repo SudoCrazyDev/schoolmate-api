@@ -49,6 +49,7 @@ Route::prefix('institution_sections')->controller(SectionController::class)->gro
     Route::post('add', 'create_section');
     Route::post('add_with_subjects', 'creaet_section_with_subject');
     Route::post('update', 'update_section');
+    Route::delete('delete/{section_id}', 'delete_section');
 });
 
 Route::group(['prefix' => 'subjects', 'controller' => SubjectController::class], function(){

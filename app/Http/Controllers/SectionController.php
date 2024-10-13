@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\InstitutionSection;
 use App\Models\SectionSubject;
+use App\Models\Student;
+use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -115,5 +117,28 @@ class SectionController extends Controller
     public function get_section_details($section_id)
     {
         return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades', 'class_adviser', 'institution.principal')->first();
+    }
+    
+    public function delete_section($section_id)
+    {
+        try {
+            DB::transaction(function() use ($section_id){
+                $subjects = SectionSubject::where('section_id', $section_id)->get();
+                foreach($subjects as $subject){
+                    StudentGrade::where('subject_id', $subject->id)->delete();
+                    SectionSubject::find($subject->id)->delete();
+                }
+                DB::table('student_sections')->where('section_id', $section_id)->delete();
+                InstitutionSection::find($section_id)->delete();
+            });
+            return response()->json([
+                'message' => 'Section Deleted!'
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to delete section'
+            ], 400);
+        }
     }
 }
