@@ -97,7 +97,7 @@ class UserController extends Controller
         try {
             $users = User::whereHas('institutions', function($query) use($institution_id){
                $query->where('institutions.id', $institution_id);
-            })->with('roles:id,title,slug')->paginate(10);
+            })->with('roles:id,title,slug')->get();
             return response()->json([
                 'data' => $users
             ], 200);
