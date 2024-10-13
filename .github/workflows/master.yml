@@ -1,0 +1,36 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Install PHP and Composer
+      - name: Setup PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2.4'  # Specify your PHP version here
+          extensions: mbstring, bcmath, xml, zip
+
+      # Step 3: Install dependencies via Composer
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      # Step 4: Deploy everything to the Hostinger server via FTP
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@4.5.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: .
+          server-dir: /public_html/api.scholastic.cloud/
