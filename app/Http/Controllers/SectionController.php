@@ -13,7 +13,7 @@ class SectionController extends Controller
 {
     public function get_all_sections($institution_id)
     {
-        return InstitutionSection::where('institution_id', $institution_id)->with('class_adviser')->paginate(10);
+        return InstitutionSection::where('institution_id', $institution_id)->with('class_adviser')->get();
     }
     
     public function create_section(Request $request)
