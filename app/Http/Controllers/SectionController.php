@@ -86,7 +86,7 @@ class SectionController extends Controller
             'institution_id' => 'sometimes|exists:institutions,id',
             'grade_level' => 'sometimes|string',
             'title' => 'sometimes',
-            'academic_year' => 'nullable'
+            'academic_year' => 'sometimes|nullable'
         ]);
         if($validator->failed()){
             return response()->json([
