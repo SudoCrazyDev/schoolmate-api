@@ -28,6 +28,10 @@ class Student extends Model
         return $this->hasMany(StudentGrade::class, 'student_id');
     }
     
+    public function values(): HasMany
+    {
+        return $this->hasMany(StudentCoreValue::class, 'student_id');
+    }
     public function sections(): BelongsToMany
     {
         return $this->belongsToMany(InstitutionSection::class, 'student_sections', 'student_id', 'section_id');

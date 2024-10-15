@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\StudentCoreValue;
 use App\Models\StudentGrade;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -115,6 +117,38 @@ class StudentController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Failed to retrieve students.'
+            ], 400);
+        }
+    }
+    
+    public function submit_observed_values(Request $request)
+    {
+        try {
+            foreach($request->corevalues as $corevalue){
+                StudentCoreValue::updateOrCreate(
+                    ['student_id' => $corevalue['student_id'], 'academic_year' => $corevalue['academic_year'], 'quarter' => $corevalue['quarter'], 'core_value' => $corevalue['core_value']],
+                    ['remarks' => $corevalue['remarks']]
+                );
+                // DB::table('student_core_values')
+                //     ->updateOrInsert(
+                //         ['student_id' => $corevalue['student_id'], 'academic_year' => $corevalue['academic_year'], 'quarter' => $corevalue['quarter'], 'core_value' => $corevalue['core_value']],
+                //         fn ($exists) => $exists ? [
+                //             'remarks' => $corevalue['remarks'],
+                //             'updated_at' => Carbon::now(),
+                //         ] : [
+                //             'remarks' => $corevalue['remarks'],
+                //             'created_at' => Carbon::now(),
+                //             'updated_at' => Carbon::now(),
+                //         ]
+                //     );
+            }
+            return response()->json([
+                'message' => 'Student Core Values Submitted!'
+            ], 201);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to Submit Core Values!'
             ], 400);
         }
     }
