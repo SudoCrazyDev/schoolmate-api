@@ -39,6 +39,7 @@ Route::prefix('users')->controller(UserController::class)->group(function(){
     Route::post('add', 'create_user');
     Route::put('update/{user_id}', 'update_user');
     Route::put('role/{user_id}', 'update_user_role');
+    Route::post('update-password', 'update_user_password');
 });
 
 Route::prefix('institution_sections')->controller(SectionController::class)->group(function(){

@@ -177,4 +177,23 @@ class UserController extends Controller
             ], 400);
         }
     }
+    
+    public function update_user_password(Request $request)
+    {
+        try {
+            $user = User::findOrFail($request->user_id);
+            $user->password = $request->password;
+            $user->is_new = 0;
+            $user->save();
+            return response()->json([
+                'message' => 'Password Updated!'
+            ], 201);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to update!'
+            ], 400);
+        }
+        
+    }
 }
