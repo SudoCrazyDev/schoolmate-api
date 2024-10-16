@@ -43,16 +43,41 @@ class StudentController extends Controller
                 'message' => 'Student Created!'
             ], 201);
         } catch (\Throwable $th) {
-            Log::info($th);
             return response()->json([
                 'message' => 'Failed to create Student'
             ], 400);
         }
     }
     
-    public function update_student(Request $request)
+    public function update_student(Request $request, $student_id)
     {
-        
+        $validator = Validator::make($request->basic_information, [
+            'lrn' => 'nullable',
+            'first_name' => 'required',
+            'middle_name' => 'nullable',
+            'last_name' => 'required',
+            'ext_name' => 'nullable',
+            'gender' => 'nullable',
+            'birthdate' => 'nullable'
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'message' => 'Validation Failed'
+            ], 400);
+        }
+        $validated = $validator->validated();
+        try {
+            DB::transaction(function() use ($validated, $student_id){
+                Student::findOrFail($student_id)->update($validated);
+            });
+            return response()->json([
+                'message' => 'Student Updaetd!'
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to update Student'
+            ], 400);
+        }
     }
     
     public function submit_grade(Request $request)
@@ -129,18 +154,6 @@ class StudentController extends Controller
                     ['student_id' => $corevalue['student_id'], 'academic_year' => $corevalue['academic_year'], 'quarter' => $corevalue['quarter'], 'core_value' => $corevalue['core_value']],
                     ['remarks' => $corevalue['remarks']]
                 );
-                // DB::table('student_core_values')
-                //     ->updateOrInsert(
-                //         ['student_id' => $corevalue['student_id'], 'academic_year' => $corevalue['academic_year'], 'quarter' => $corevalue['quarter'], 'core_value' => $corevalue['core_value']],
-                //         fn ($exists) => $exists ? [
-                //             'remarks' => $corevalue['remarks'],
-                //             'updated_at' => Carbon::now(),
-                //         ] : [
-                //             'remarks' => $corevalue['remarks'],
-                //             'created_at' => Carbon::now(),
-                //             'updated_at' => Carbon::now(),
-                //         ]
-                //     );
             }
             return response()->json([
                 'message' => 'Student Core Values Submitted!'
@@ -149,6 +162,21 @@ class StudentController extends Controller
             Log::info($th);
             return response()->json([
                 'message' => 'Failed to Submit Core Values!'
+            ], 400);
+        }
+    }
+    
+    public function get_student_info($student_id)
+    {
+        try {
+            $student = Student::findOrFail($student_id);
+            return response()->json([
+                'data' => $student
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'mesage' => 'Failed to fetch student'
             ], 400);
         }
     }
