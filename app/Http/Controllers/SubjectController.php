@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPSTORM_META\map;
+
 class SubjectController extends Controller
 {
     public function get_subjects_by_section($section_id)
@@ -105,9 +107,65 @@ class SubjectController extends Controller
     
     public function get_subject_details($subject_id)
     {
-        return SectionSubject::where('id', $subject_id)->with(['students.grades' => function($query) use ($subject_id){
-            $query->where('subject_id', $subject_id);
-        }])->first();
+        try {
+            DB::transaction(function() use($subject_id){
+                $genMapeh = [
+                    'music',
+                    'arts',
+                    'pe',
+                    'health'
+                ];
+                $g7Mapeh = [
+                    'music & arts',
+                    'pe & health'
+                ];
+                $subject = SectionSubject::with('section')->where('id', $subject_id)->first();
+                if(strtolower($subject->title) === 'mapeh'){
+                    $sub_subjects = SectionSubject::where('parent_subject', $subject_id)->get();
+                    if(count($sub_subjects) === 0){
+                        if($subject->section->grade_level == '7'){
+                            foreach($g7Mapeh as $sub){
+                                SectionSubject::create([
+                                    'subject_teacher' => $subject->subject_teacher,
+                                    'parent_subject' => $subject->id,
+                                    'section_id' => $subject->section_id,
+                                    'sem' => $subject->sem,
+                                    'title' => $sub,
+                                    'start_time' => $subject->start_time,
+                                    'end_time' => $subject->end_time
+                                ]);
+                            }
+                        } else {
+                            foreach($genMapeh as $sub){
+                                SectionSubject::create([
+                                    'subject_teacher' => $subject->subject_teacher,
+                                    'parent_subject' => $subject->id,
+                                    'section_id' => $subject->section_id,
+                                    'sem' => $subject->sem,
+                                    'title' => $sub,
+                                    'start_time' => $subject->start_time,
+                                    'end_time' => $subject->end_time
+                                ]);
+                            }
+                        }
+                    }
+                }
+            });
+            $subject = SectionSubject::with('sub_subjects')->where('id', $subject_id)->first();
+            return SectionSubject::where('id', $subject_id)->with(['students.grades' => function($query) use ($subject_id, $subject){
+                if(strtolower($subject->title) === 'mapeh'){
+                    $query->whereIn('subject_id', $subject->sub_subjects->pluck('id'));
+                }else{
+                    $query->where('subject_id', $subject_id);
+                }
+                
+            }, 'sub_subjects'])->first();
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to Fetch Subject Details'
+            ], 400);
+        }
     }
     
     public function unlock_subject_grades(Request $request, $subject_id)
