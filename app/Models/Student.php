@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\StudentActiveScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,11 @@ class Student extends Model
         'gender',
         'birthdate'
     ];
+    
+    protected static function booted()
+    {
+        static::addGlobalScope(new StudentActiveScope);
+    }
     
     public function grades(): HasMany
     {

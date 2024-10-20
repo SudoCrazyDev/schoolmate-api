@@ -135,7 +135,7 @@ class StudentController extends Controller
     public function count_students_per_institution($institution_id)
     {
         try {
-            $students = Student::where('institution_id', $institution_id)->get();
+            $students = Student::where(['institution_id' => $institution_id, 'is_active' => 1])->get();
             return response()->json([
                 'data' => $students,
             ], 200);
@@ -177,6 +177,22 @@ class StudentController extends Controller
             Log::info($th);
             return response()->json([
                 'mesage' => 'Failed to fetch student'
+            ], 400);
+        }
+    }
+    
+    public function disable_student($student_id)
+    {
+        try {
+            $student = Student::findOrFail($student_id);
+            $student->is_active = 0;
+            $student->save();
+            return response()->json([
+                'Message' => 'Student Disabled!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to update student!'
             ], 400);
         }
     }
