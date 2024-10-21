@@ -18,7 +18,9 @@ class InstitutionController extends Controller
     public function create_institution(Request $request){
         $validated = $request->validate([
             'title' => 'required',
-            'abbr' => 'nullable'
+            'abbr' => 'nullable',
+            'address' => 'nullable',
+            'gov_id' => 'nullable'
         ]);
         if(!$validated){
             return response()->json([
