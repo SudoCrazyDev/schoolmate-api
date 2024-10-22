@@ -35,6 +35,11 @@ class SectionSubject extends Model
         return $this->belongsTo(User::class, 'subject_teacher');
     }
     
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'subject_teacher');
+    }
+    
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'student_sections', 'section_id', 'student_id', 'section_id', 'id');

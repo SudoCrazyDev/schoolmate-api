@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InstitutionSection;
 use App\Models\SectionSubject;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
@@ -186,5 +187,23 @@ class SubjectController extends Controller
             ], 400);
         }
         
+    }
+    
+    public function get_subjects_missing_grades($section_id)
+    {
+        try {
+            $section = InstitutionSection::with('subjects.teacher')->where('id', $section_id)->first();
+            $subject_stats = [];
+            foreach($section->subjects ?? [] as $subject){
+                $count = StudentGrade::where(['subject_id' => $subject->id, 'quarter' => 1])->count();
+                array_push($subject_stats, ['title' => $subject->title, 'subject_teacher' => $subject->teacher, 'graded' => $count]);
+            }
+            return response()->json([
+                'data' => $subject_stats
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+            ], 400);
+        }
     }
 }

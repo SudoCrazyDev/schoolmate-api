@@ -57,6 +57,7 @@ Route::group(['prefix' => 'subjects', 'controller' => SubjectController::class],
     Route::get('by_section/{section_id}', 'get_subjects_by_section');
     Route::get('by_user/{user_id}', 'get_subjects_by_user');
     Route::get('{subject_id}', 'get_subject_details');
+    Route::get('missing_grades/{section_id}', 'get_subjects_missing_grades');
     Route::put('unlock_grades/{subject_id}', 'unlock_subject_grades');
     Route::put('{subject_id}', 'update_subject');
     Route::post('validate_conflict', 'check_for_teacher_conflict');
