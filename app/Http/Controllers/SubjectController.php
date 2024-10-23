@@ -196,7 +196,9 @@ class SubjectController extends Controller
             $subject_stats = [];
             foreach($section->subjects ?? [] as $subject){
                 $count = StudentGrade::where(['subject_id' => $subject->id, 'quarter' => 1])->count();
-                array_push($subject_stats, ['title' => $subject->title, 'subject_teacher' => $subject->teacher, 'graded' => $count]);
+                if(strtolower($subject->title) !== 'mapeh'){
+                    array_push($subject_stats, ['title' => $subject->title, 'subject_teacher' => $subject->teacher, 'graded' => $count]);
+                }
             }
             return response()->json([
                 'data' => $subject_stats
