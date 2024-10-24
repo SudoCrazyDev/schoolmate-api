@@ -196,4 +196,20 @@ class StudentController extends Controller
             ], 400);
         }
     }
+    
+    public function delete_grade($grade_id)
+    {
+        try {
+            DB::transaction(function() use($grade_id){
+                StudentGrade::findOrFail($grade_id)->delete();
+            });
+            return response()->json([
+                'message' => 'Grade Deleted Successfully!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to remove grade'
+            ], 400);
+        }
+    }
 }

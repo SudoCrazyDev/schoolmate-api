@@ -75,6 +75,7 @@ Route::group(['prefix' => 'students', 'controller' => StudentController::class],
     Route::get('count/section/{section_id}', 'count_students_per_section');
     Route::get('count/institution/{institution_id}', 'count_students_per_institution');
     Route::get('info/{student_id}', 'get_student_info');
+    Route::delete('grade/{grade_id}', 'delete_grade');
 });
 
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
