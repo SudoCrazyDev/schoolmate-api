@@ -47,6 +47,7 @@ Route::prefix('institution_sections')->controller(SectionController::class)->gro
     Route::get('get_by_user/{user_id}', 'get_by_user');
     Route::get('subjects', 'get_section_subjects');
     Route::get('{section_id}', 'get_section_details');
+    Route::get('all_by_institutions/{institution_id}/grades', 'get_sections_subjects_with_grades');
     Route::post('add', 'create_section');
     Route::post('add_with_subjects', 'creaet_section_with_subject');
     Route::post('update', 'update_section');

@@ -15,7 +15,7 @@ class SectionController extends Controller
 {
     public function get_all_sections($institution_id)
     {
-        return InstitutionSection::where('institution_id', $institution_id)->with('class_adviser')->get();
+        return InstitutionSection::where('institution_id', $institution_id)->with(['class_adviser', 'subjects'])->get();
     }
     
     public function create_section(Request $request)
@@ -116,7 +116,7 @@ class SectionController extends Controller
     
     public function get_section_details($section_id)
     {
-        return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades.subject', 'students.values', 'class_adviser', 'institution.principal')->first();
+        return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades.subject.subject_teacher', 'students.values', 'class_adviser', 'institution.principal')->first();
     }
     
     public function delete_section($section_id)
@@ -140,5 +140,9 @@ class SectionController extends Controller
                 'message' => 'Failed to delete section'
             ], 400);
         }
+    }
+    
+    public function get_sections_subjects_with_grades($institution_id){
+        return InstitutionSection::where('institution_id', $institution_id)->with(['subjects.student_grades'])->get();
     }
 }

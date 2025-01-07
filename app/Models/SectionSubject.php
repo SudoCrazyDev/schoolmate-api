@@ -50,4 +50,9 @@ class SectionSubject extends Model
         return $this->hasMany(SectionSubject::class, 'parent_subject');
     }
     
+    public function student_grades(): HasMany
+    {
+        return $this->hasMany(StudentGrade::class,'subject_id');
+    }
+    
 }
