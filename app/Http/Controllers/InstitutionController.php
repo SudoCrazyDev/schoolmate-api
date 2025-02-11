@@ -56,6 +56,7 @@ class InstitutionController extends Controller
                     'title' => $request->institution,
                     'abbr' => $request->abbr,
                     'address' => $request->address,
+                    'gov_id' => $request->gov_id,
                     'logo' => $path
                 ]);
             });
