@@ -116,7 +116,15 @@ class SectionController extends Controller
     
     public function get_section_details($section_id)
     {
-        return InstitutionSection::where('id', $section_id)->with('subjects.subject_teacher', 'students.grades.subject.subject_teacher', 'students.values', 'class_adviser', 'institution.principal')->first();
+        return InstitutionSection::where('id', $section_id)->with(
+        'subjects.subject_teacher',
+        'students.grades.subject.subject_teacher',
+        'students.values',
+        'students.attendance',
+        'class_adviser',
+        'institution.principal',
+        'institution.school_days'
+        )->first();
     }
     
     public function delete_section($section_id)

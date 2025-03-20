@@ -42,4 +42,8 @@ class Student extends Model
     {
         return $this->belongsToMany(InstitutionSection::class, 'student_sections', 'student_id', 'section_id');
     }
+    public function attendance(): HasMany
+    {
+        return $this->hasMany(StudentAttendance::class, 'student_id');
+    }
 }

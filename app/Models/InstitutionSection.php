@@ -13,32 +13,35 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class InstitutionSection extends Model
 {
     use HasFactory, HasUuids;
-    
+
     protected $fillable = [
         'class_adviser',
         'institution_id',
         'grade_level',
         'title',
-        'academic_year'
+        'academic_year',
+        'card_template_id'
     ];
-    
+
     public function class_adviser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'class_adviser', 'id');
     }
-    
+
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);
     }
-    
+
     public function subjects(): HasMany
     {
         return $this->hasMany(SectionSubject::class, 'section_id');
     }
-    
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'student_sections', 'section_id', 'student_id');
     }
+
+
 }

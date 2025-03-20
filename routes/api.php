@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\CardInstitutionTemplateController;
 use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\InstitutionSchoolDaysController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
@@ -41,7 +43,6 @@ Route::prefix('users')->controller(UserController::class)->group(function(){
     Route::put('role/{user_id}', 'update_user_role');
     Route::post('update-password', 'update_user_password');
 });
-
 Route::prefix('institution_sections')->controller(SectionController::class)->group(function(){
     Route::get('all_by_institutions/{institution_id}', 'get_all_sections');
     Route::get('get_by_user/{user_id}', 'get_by_user');
@@ -53,7 +54,6 @@ Route::prefix('institution_sections')->controller(SectionController::class)->gro
     Route::post('update', 'update_section');
     Route::delete('delete/{section_id}', 'delete_section');
 });
-
 Route::group(['prefix' => 'subjects', 'controller' => SubjectController::class], function(){
     Route::get('by_section/{section_id}', 'get_subjects_by_section');
     Route::get('by_user/{user_id}', 'get_subjects_by_user');
@@ -65,7 +65,6 @@ Route::group(['prefix' => 'subjects', 'controller' => SubjectController::class],
     Route::post('add', 'create_subject');
     Route::delete('{subject_id}', 'delete_subject');
 });
-
 Route::group(['prefix' => 'students', 'controller' => StudentController::class], function(){
     Route::post('add', 'create_student');
     Route::post('submit_grades', 'submit_grade');
@@ -78,7 +77,19 @@ Route::group(['prefix' => 'students', 'controller' => StudentController::class],
     Route::get('info/{student_id}', 'get_student_info');
     Route::delete('grade/{grade_id}', 'delete_grade');
 });
-
+Route::group(['prefix' => 'card_templates', 'controller' => CardInstitutionTemplateController::class], function(){
+    Route::post('add', 'add_card_template');
+    Route::post('update', 'update_card_template');
+    Route::post('update/section_card_template', 'update_section_card_template');
+    Route::get('/{card_template_id}', 'get_card_template');
+    Route::get('/institutions/{institution_id}', 'get_institutions_card_templates');
+});
+Route::group(['prefix' => 'school_days', 'controller' => InstitutionSchoolDaysController::class], function(){
+    Route::post('add', 'add_school_days');
+    Route::post('update', 'update_school_days');
+    Route::post('/update_advisory', 'update_students_attendance');
+    Route::get('/{institutiond_id}', 'get_institution_school_days');
+});
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
     Route::get('grade_access/{institution_id}', 'get_grades_access');
     Route::put('update_grading_access/{institution_id}', 'update_grading_access');

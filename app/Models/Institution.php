@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Institution extends Model
@@ -39,5 +40,10 @@ class Institution extends Model
         return Attribute::make(
             get: fn ($value) => $value ? Storage::temporaryUrl($value, now()->addMinute()) : null
         );
+    }
+    
+    public function school_days(): HasMany
+    {
+        return $this->hasMany(InstitutionSchoolDay::class, 'institution_id');
     }
 }
