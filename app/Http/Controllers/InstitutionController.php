@@ -20,7 +20,9 @@ class InstitutionController extends Controller
             'title' => 'required',
             'abbr' => 'nullable',
             'address' => 'nullable',
-            'gov_id' => 'nullable'
+            'gov_id' => 'nullable',
+            'division' => 'nullable',
+            'region' => 'nullable'
         ]);
         if(!$validated){
             return response()->json([
@@ -57,7 +59,9 @@ class InstitutionController extends Controller
                     'abbr' => $request->abbr,
                     'address' => $request->address,
                     'gov_id' => $request->gov_id,
-                    'logo' => $path
+                    'logo' => $path,
+                    'division' => $request->division,
+                    'region' => $request->region
                 ]);
             });
             return response()->json([
