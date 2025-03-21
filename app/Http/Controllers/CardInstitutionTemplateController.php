@@ -24,7 +24,7 @@ class CardInstitutionTemplateController extends Controller
         try {
             CardInstitutionTemplate::create([
                 'institution_id' => $request->institution_id,
-                'title' => $request->title,
+                'title' => $request->title ? $request->title : 'No Title Card Template',
                 'subjects' => $request->subjects
             ]);
             return response()->json([
