@@ -46,7 +46,7 @@ class InstitutionSchoolDaysController extends Controller
     public function update_school_days(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'school_day_id' => 'required',
+            'id' => 'required',
             'jan' => 'sometimes',
             'feb' => 'sometimes',
             'mar' => 'sometimes',
@@ -61,10 +61,10 @@ class InstitutionSchoolDaysController extends Controller
             'dec' => 'sometimes'
         ]);
         if($validator->fails()){
-            return response()->json(['Invalid Data'], 400);
+            return response()->json(['message' => 'Invalid Data'], 400);
         }
         $validated = $validator->validated();
-        $school_day = InstitutionSchoolDay::findOrFail($validated['school_day_id']);
+        $school_day = InstitutionSchoolDay::findOrFail($validated['id']);
         $school_day->update($validated);
         return response()->json(['message' => 'School Days Updated!'], 201);
     }
