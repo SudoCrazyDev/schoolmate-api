@@ -6,6 +6,7 @@ use App\Http\Controllers\InstitutionSchoolDaysController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SchoolFormsController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -89,6 +90,9 @@ Route::group(['prefix' => 'school_days', 'controller' => InstitutionSchoolDaysCo
     Route::post('update', 'update_school_days');
     Route::post('/update_advisory', 'update_students_attendance');
     Route::get('/{institutiond_id}', 'get_institution_school_days');
+});
+Route::group(['prefix' => 'school_forms', 'controller' => SchoolFormsController::class], function(){
+    Route::post('form137', 'generate_form_137');
 });
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
     Route::get('grade_access/{institution_id}', 'get_grades_access');
