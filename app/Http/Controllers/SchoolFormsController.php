@@ -55,7 +55,7 @@ class SchoolFormsController extends Controller
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $writer->save($newPath);
             
-            $url = asset('forms/' . $filename);
+            $url = asset('public/forms/' . $filename);
             Log::info($url);
             return $url;
         } catch (\Throwable $th) {
