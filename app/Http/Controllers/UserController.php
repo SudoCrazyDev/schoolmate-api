@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserEmploymentDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -97,7 +98,7 @@ class UserController extends Controller
         try {
             $users = User::whereHas('institutions', function($query) use($institution_id){
                $query->where('institutions.id', $institution_id);
-            })->with('roles:id,title,slug')->get();
+            })->with('roles:id,title,slug', 'employment')->get();
             return response()->json([
                 'data' => $users
             ], 200);
@@ -195,5 +196,54 @@ class UserController extends Controller
             ], 400);
         }
         
+    }
+    
+    public function get_users_with_attendance_logs(Request $request)
+    {
+        try {
+            try {
+                $users = User::whereHas('institutions', function($query) use($request){
+                   $query->where('institutions.id', $request->institution_id);
+                })->with(
+                    [
+                    'roles:title,slug',
+                    'employment',
+                    'attendances' => function($query) use($request){
+                        $query->where('auth_date', [$request->start_date, $request->end_date]);
+                    }]
+                )->get();
+                return response()->json([
+                    'data' => $users
+                ], 200);
+            } catch (\Throwable $th) {
+                Log::info($th);
+                return response()->json([
+                    'message' => "Error Fetching Users"
+                ], 400);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    
+    public function update_user_employment_details(Request $request, $user_id)
+    {
+        try {
+            UserEmploymentDetail::updateOrCreate(
+                ['user_id' => $user_id],
+                [
+                    'employee_id' => $request->employee_id,
+                    'date_started' => $request->date_started,
+                    'position' => $request->position
+                ]
+            );
+            return response()->json([
+                'message' => 'User Employment Details Updated!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to update user employment details!'
+            ], 400);
+        }
     }
 }

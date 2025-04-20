@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\CardInstitutionTemplateController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionSchoolDaysController;
+use App\Http\Controllers\InstitutionTimeScheduleController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
@@ -42,7 +44,9 @@ Route::prefix('users')->controller(UserController::class)->group(function(){
     Route::post('add', 'create_user');
     Route::put('update/{user_id}', 'update_user');
     Route::put('role/{user_id}', 'update_user_role');
+    Route::put('employment/{user_id}', 'update_user_employment_details');
     Route::post('update-password', 'update_user_password');
+    Route::post('attendance', 'get_users_with_attendance_logs');
 });
 Route::prefix('institution_sections')->controller(SectionController::class)->group(function(){
     Route::get('all_by_institutions/{institution_id}', 'get_all_sections');
@@ -93,6 +97,15 @@ Route::group(['prefix' => 'school_days', 'controller' => InstitutionSchoolDaysCo
 });
 Route::group(['prefix' => 'school_forms', 'controller' => SchoolFormsController::class], function(){
     Route::post('form137', 'generate_form_137');
+});
+Route::group(['prefix' => 'time_schedules', 'controller' => InstitutionTimeScheduleController::class], function(){
+    Route::get('/{institution_id}', 'get_institution_time_schedules');
+    Route::post('add', 'add_institution_time_schedule');
+    Route::post('update', 'update_institution_time_schedule');
+    Route::delete('/{institution_id}', 'delete_institution_time_schedule');
+});
+Route::group(['prefix' => 'attendance_records', 'controller' => AttendanceRecordController::class], function(){
+    Route::post('/bulk-upload', 'upload_teacher_attendance_log');
 });
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
     Route::get('grade_access/{institution_id}', 'get_grades_access');
