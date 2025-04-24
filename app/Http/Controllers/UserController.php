@@ -25,7 +25,11 @@ class UserController extends Controller
         if(Hash::check($request->password, $user->password)){
             $user->token = Str::random(25);
             $user->save();
-            return User::where('id', $user->id)->with(['roles:title,slug', 'institutions:id,title,logo,address'])->first();
+            return User::where('id', $user->id)->with([
+                'roles:title,slug',
+                'institutions:id,title,logo,address',
+                'institutions.subscriptions.subscription'
+                ])->first();
         } else {
             return response()->json([
                 'data' => null,

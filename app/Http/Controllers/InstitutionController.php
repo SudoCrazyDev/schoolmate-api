@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
+use App\Models\InstitutionSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -72,6 +73,29 @@ class InstitutionController extends Controller
             return response()->json([
                 'data' => null,
                 'message' => 'Error on Updating Institution'
+            ], 400);
+        }
+    }
+    
+    public function update_institution_subscription(Request $request)
+    {
+        try {
+            DB::transaction(function() use($request){
+                InstitutionSubscription::updateOrCreate([
+                    'institution_id' => $request->institution_id,
+                    'subscription_id' => $request->subscription_id
+                ],[
+                    'institution_id' => $request->institution_id,
+                    'subscription_id' => $request->subscription_id
+                ]);
+            });
+            return response()->json([
+                'message' => 'Institution Subscription Updated!'
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to update institution subscription'
             ], 400);
         }
     }

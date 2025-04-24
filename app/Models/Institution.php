@@ -23,27 +23,32 @@ class Institution extends Model
         'gov_id',
         'logo'
     ];
-    
+
     protected $hidden = [
         'pivot'
     ];
-    
+
     public function principal(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_institutions', 'institution_id', 'user_id')->whereHas('roles', function($query){
             $query->where('slug', 'principal');
         });
     }
-    
+
     protected function logo(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value ? Storage::temporaryUrl($value, now()->addMinute()) : null
         );
     }
-    
+
     public function school_days(): HasMany
     {
         return $this->hasMany(InstitutionSchoolDay::class, 'institution_id');
+    }
+    
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(InstitutionSubscription::class, 'institution_id');
     }
 }

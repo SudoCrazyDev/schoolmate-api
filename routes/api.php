@@ -12,6 +12,7 @@ use App\Http\Controllers\SchoolFormsController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,7 @@ Route::prefix('institution')->controller(InstitutionController::class)->group(fu
     Route::get('all', 'get_all_institution');
     Route::post('add', 'create_institution');
     Route::post('update', 'update_institution');
+    Route::post('update/subscription', 'update_institution_subscription');
 });
 
 Route::prefix('roles')->controller(RoleController::class)->group(function(){
@@ -33,6 +35,12 @@ Route::prefix('roles')->controller(RoleController::class)->group(function(){
 Route::prefix('permissions')->controller(PermissionController::class)->group(function(){
     Route::get('all', 'get_all_permissions');
     Route::post('add', 'create_permission');
+});
+
+Route::prefix('subscriptions')->controller(SubscriptionController::class)->group(function(){
+    Route::get('/', 'get_all_subscriptions');
+    Route::post('/', 'create_subscription');
+    Route::post('update', 'update_subscription');
 });
 /*END ADMIN ROUTES */
 
