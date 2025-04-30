@@ -212,8 +212,11 @@ class UserController extends Controller
                     [
                     'roles:title,slug',
                     'employment',
-                    'attendances' => function($query) use($request){
-                        $query->where('auth_date', [$request->start_date, $request->end_date]);
+                    'custom_attendances' => function($query) use($request){
+                        $query->whereBetween('auth_date', [$request->start_date, $request->end_date]);
+                    },
+                    'proper_attendances' => function($query) use($request){
+                        $query->whereBetween('auth_date', [$request->start_date, $request->end_date]);
                     }]
                 )->get();
                 return response()->json([

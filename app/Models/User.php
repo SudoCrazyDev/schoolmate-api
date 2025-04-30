@@ -102,7 +102,12 @@ class User extends Authenticatable
         return $this->hasOne(UserEmploymentDetail::class, 'user_id');
     }
     
-    public function attendances(): HasManyThrough
+    public function custom_attendances(): HasMany
+    {
+        return $this->hasMany(TeacherAttendance::class, 'employee_id', 'id');
+    }
+    
+    public function proper_attendances(): HasManyThrough
     {
         return $this->hasManyThrough(TeacherAttendance::class, UserEmploymentDetail::class, 'user_id', 'employee_id', 'id', 'employee_id');
     }
