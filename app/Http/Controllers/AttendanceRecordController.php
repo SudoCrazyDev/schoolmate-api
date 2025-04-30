@@ -44,35 +44,40 @@ class AttendanceRecordController extends Controller
             $rows = $worksheet->toArray();
         
             $grouped = [];
-
+            
             foreach ($rows as $index => $row) {
                 if ($index === 0) continue;
-        
+            
                 $fullName = trim($row[0]);
-        
-                $parts = explode(',', $fullName);
-                if (count($parts) < 2) continue;
-        
-                $lastName = trim($parts[0]);
-                $firstAndMi = trim($parts[1]);
-                $firstName = explode(' ', $firstAndMi)[0];
-        
-                
-                $user = User::where('first_name', $firstName)
-                            ->where('last_name', $lastName)
-                            ->first();
-        
+            
+                if (!str_contains($fullName, ',')) continue;
+            
+                [$lastName, $rest] = explode(',', $fullName, 2);
+                $lastName = trim($lastName);
+                $restParts = explode(' ', trim($rest));
+            
+                $middleInitial = '';
+                if (count($restParts) >= 2 && preg_match('/^[A-Z]\.?$/i', end($restParts))) {
+                    $middleInitial = array_pop($restParts);
+                }
+            
+                $firstName = implode(' ', $restParts);
+            
+                $userQuery = User::where('first_name', 'LIKE', $firstName)
+                                 ->where('last_name', 'LIKE', $lastName);
+
+                $user = $userQuery->first();
                 if (!$user) continue;
-        
+            
                 $dateTimeStr = trim($row[2]);
-        
                 try {
                     $carbonDateTime = Carbon::createFromFormat('d/m/Y h:i:sa', $dateTimeStr);
                 } catch (\Exception $e) {
                     continue;
                 }
-        
+            
                 $date = $carbonDateTime->toDateString();
+            
                 $grouped[$user->id][$date][] = [
                     'datetime' => $carbonDateTime,
                     'employee' => $fullName,
