@@ -115,6 +115,7 @@ Route::group(['prefix' => 'time_schedules', 'controller' => InstitutionTimeSched
 Route::group(['prefix' => 'attendance_records', 'controller' => AttendanceRecordController::class], function(){
     Route::post('/bulk-upload', 'upload_teacher_attendance_log');
     Route::post('/custom-bulk-upload', 'custom_upload_teacher_attendance_log');
+    Route::post('/update/attendace-record', 'update_attendance_record');
 });
 Route::group(['prefix' => 'meta', 'controller' => MetaController::class], function(){
     Route::get('grade_access/{institution_id}', 'get_grades_access');
