@@ -211,6 +211,8 @@ class UserController extends Controller
                 })->with(
                     [
                     'roles:title,slug',
+                    'institutions',
+                    'institutions.principal',
                     'employment',
                     'custom_attendances' => function($query) use($request){
                         $query->whereBetween('auth_date', [$request->start_date, $request->end_date]);
