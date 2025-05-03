@@ -69,7 +69,7 @@ class AttendanceRecordController extends Controller
                 $user = $userQuery->first();
 
                 if (!$user) {
-                    $unknownEntries[] = $fullName;
+                    $unknownEntries[$fullName] = $fullName;
                     continue;
                 }
 
