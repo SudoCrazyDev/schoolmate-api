@@ -68,7 +68,10 @@ class AttendanceRecordController extends Controller
 
                 $user = $userQuery->first();
 
-                if (!$user) continue;
+                if (!$user) {
+                    $unknownEntries[] = $fullName;
+                    continue;
+                }
 
                 $dateTimeStr = trim($row[2]);
 
