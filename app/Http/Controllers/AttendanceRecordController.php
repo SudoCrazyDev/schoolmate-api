@@ -156,4 +156,62 @@ class AttendanceRecordController extends Controller
             ], 400);
         }
     }
+    
+    public function delete_attendance_record(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required',
+            ]);
+            $attendanceRecord = TeacherAttendance::find($request->id);
+
+            if (!$attendanceRecord) {
+                return response()->json([
+                    'message' => 'Attendance record not found',
+                ], 404);
+            }
+
+            $attendanceRecord->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Attendance record deleted successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Failed to delete attendance record',
+            ], 400);
+        }
+    }
+    
+    public function add_attendance_record(Request $request)
+    {
+        try {
+            $auth_date = Carbon::parse($request->auth_date);
+            $record = TeacherAttendance::firstOrCreate(
+            [
+                'institution_id' =>  $request->institution_id,
+                'employee_id' => $request->employee_id,
+                'status'      => $request->status,
+                'auth_date' => $auth_date->toDateString()
+            ],
+            [
+                'institution_id' => $request->institution_id,
+                'employee_id' => $request->employee_id,
+                'status'      => $request->status,
+                'auth_date' => $auth_date->toDateString(),
+                'auth_time'   => $request->val,
+            ]);
+            return response()->json([
+                'status' => 'success',
+                'record' => $record,
+                'message' => 'Attendance record added successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+            return response()->json([
+                'message' => 'Failed to add attendance record',
+            ], 400);
+        }
+    }
 }
