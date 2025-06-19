@@ -13,6 +13,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -123,3 +124,5 @@ Route::group(['prefix' => 'meta', 'controller' => MetaController::class], functi
     Route::get('grade_access/{institution_id}', 'get_grades_access');
     Route::put('update_grading_access/{institution_id}', 'update_grading_access');
 });
+
+Route::apiResource('trainings', TrainingController::class);
