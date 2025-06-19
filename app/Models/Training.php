@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TrainingImage; // Added import
+use Illuminate\Database\Eloquent\Relations\HasMany; // Added import
 
 class Training extends Model
 {
@@ -25,7 +27,7 @@ class Training extends Model
         'title',
         'description',
         'date',
-        'images',
+        // 'images' removed
     ];
 
     /**
@@ -34,7 +36,17 @@ class Training extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'images' => 'array',
+        // 'images' cast removed
         'date' => 'date',
     ];
+
+    /**
+     * Get all of the images for the Training
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(TrainingImage::class);
+    }
 }

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Training;
+use App\Models\TrainingImage; // Added import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str; // For generating unique filenames
+use Illuminate\Support\Str;
 
 class TrainingController extends Controller
 {
@@ -14,7 +15,7 @@ class TrainingController extends Controller
      */
     public function index()
     {
-        return response()->json(['data' => Training::all()]);
+        return response()->json(['data' => Training::with('images')->get()]);
     }
 
     /**
@@ -27,22 +28,25 @@ class TrainingController extends Controller
             'description' => 'required|string',
             'date' => 'required|date',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Max 2MB per image
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $imagePaths = [];
+        // Create Training record first (without images)
+        $training = Training::create([
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'date' => $validatedData['date'],
+        ]);
+
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
                 $filename = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
                 $path = $imageFile->storeAs('trainings', $filename, 'public');
-                $imagePaths[] = $path;
+                $training->images()->create(['path' => $path]);
             }
         }
 
-        $validatedData['images'] = json_encode($imagePaths); // Store as JSON array
-
-        $training = Training::create($validatedData);
-
+        $training->load('images'); // Load the images relationship for the response
         return response()->json($training, 201);
     }
 
@@ -51,6 +55,7 @@ class TrainingController extends Controller
      */
     public function show(Training $training)
     {
+        $training->load('images');
         return response()->json(['data' => $training]);
     }
 
@@ -63,40 +68,40 @@ class TrainingController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'date' => 'sometimes|required|date',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'images' => 'nullable|array', // Can be an empty array to remove all images
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $imagePaths = $training->images ? (is_array($training->images) ? $training->images : json_decode($training->images, true)) : [];
+        // Update non-image fields
+        $training->update([
+            'title' => $validatedData['title'] ?? $training->title,
+            'description' => $validatedData['description'] ?? $training->description,
+            'date' => $validatedData['date'] ?? $training->date,
+        ]);
 
         if ($request->hasFile('images')) {
-            // Delete old images if new ones are uploaded
-            if (!empty($imagePaths)) {
-                foreach ($imagePaths as $oldImagePath) {
-                    Storage::disk('public')->delete($oldImagePath);
-                }
+            // Delete old images (files and records)
+            foreach ($training->images as $image) {
+                Storage::disk('public')->delete($image->path);
+                $image->delete(); // Delete the TrainingImage record
             }
 
-            $newImagePaths = [];
+            // Store new images
             foreach ($request->file('images') as $imageFile) {
                 $filename = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
                 $path = $imageFile->storeAs('trainings', $filename, 'public');
-                $newImagePaths[] = $path;
+                $training->images()->create(['path' => $path]);
             }
-            $validatedData['images'] = json_encode($newImagePaths);
-        } else if (array_key_exists('images', $validatedData) && $validatedData['images'] === null) {
-            // If images field is explicitly set to null (e.g. to remove all images)
-             if (!empty($imagePaths)) {
-                foreach ($imagePaths as $oldImagePath) {
-                    Storage::disk('public')->delete($oldImagePath);
-                }
+        } elseif (array_key_exists('images', $validatedData) && ($validatedData['images'] === null || (is_array($validatedData['images']) && empty($validatedData['images'])) ) ) {
+            // If 'images' key is present and null or an empty array, remove all existing images
+            foreach ($training->images as $image) {
+                Storage::disk('public')->delete($image->path);
+                $image->delete();
             }
-            $validatedData['images'] = json_encode([]);
         }
 
 
-        $training->update($validatedData);
-
+        $training->load('images'); // Load the images relationship for the response
         return response()->json($training);
     }
 
@@ -105,16 +110,14 @@ class TrainingController extends Controller
      */
     public function destroy(Training $training)
     {
-        // Delete associated images from storage
-        $imagePaths = $training->images ? (is_array($training->images) ? $training->images : json_decode($training->images, true)) : [];
-        if (!empty($imagePaths)) {
-            foreach ($imagePaths as $imagePath) {
-                Storage::disk('public')->delete($imagePath);
-            }
+        // Delete associated image files
+        // TrainingImage records will be deleted by onDelete('cascade')
+        foreach ($training->images as $image) {
+            Storage::disk('public')->delete($image->path);
         }
 
         $training->delete();
 
-        return response()->json(null, 204); // Or a success message with 200
+        return response()->json(null, 204);
     }
 }
