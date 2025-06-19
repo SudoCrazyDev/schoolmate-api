@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Training; // Added import
 
 class User extends Authenticatable
 {
@@ -110,5 +111,15 @@ class User extends Authenticatable
     public function proper_attendances(): HasManyThrough
     {
         return $this->hasManyThrough(TeacherAttendance::class, UserEmploymentDetail::class, 'user_id', 'employee_id', 'id', 'employee_id');
+    }
+
+    /**
+     * Get all of the trainings for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trainings(): HasMany
+    {
+        return $this->hasMany(Training::class);
     }
 }

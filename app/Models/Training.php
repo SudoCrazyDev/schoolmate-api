@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\TrainingImage; // Added import
-use Illuminate\Database\Eloquent\Relations\HasMany; // Added import
+use App\Models\TrainingImage;
+use App\Models\User; // Added import
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Added import
 
 class Training extends Model
 {
@@ -27,7 +29,7 @@ class Training extends Model
         'title',
         'description',
         'date',
-        // 'images' removed
+        'user_id', // Added user_id
     ];
 
     /**
@@ -48,5 +50,13 @@ class Training extends Model
     public function images(): HasMany
     {
         return $this->hasMany(TrainingImage::class);
+    }
+
+    /**
+     * Get the user that owns the training.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

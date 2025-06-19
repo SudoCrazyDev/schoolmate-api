@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Training;
 use App\Models\TrainingImage;
+use App\Models\User; // Added import
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,10 +20,10 @@ class TrainingFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory(),
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'date' => $this->faker->date(),
-            // 'images' attribute removed
         ];
     }
 

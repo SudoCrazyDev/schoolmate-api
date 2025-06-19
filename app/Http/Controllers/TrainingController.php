@@ -31,12 +31,14 @@ class TrainingController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        // Create Training record first (without images)
-        $training = Training::create([
+        $dataToCreate = [
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
             'date' => $validatedData['date'],
-        ]);
+            'user_id' => $request->user()->id, // Associate authenticated user
+        ];
+
+        $training = Training::create($dataToCreate);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
