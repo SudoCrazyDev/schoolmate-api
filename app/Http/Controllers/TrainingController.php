@@ -25,17 +25,18 @@ class TrainingController extends Controller
     {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date' => 'required|date',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'user_id' => 'required|exists:users,id', // Ensure user_id is provided and exists
         ]);
 
         $dataToCreate = [
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
             'date' => $validatedData['date'],
-            'user_id' => $request->user()->id, // Associate authenticated user
+            'user_id' => $validatedData['user_id'], // Use validated user_id
         ];
 
         $training = Training::create($dataToCreate);
